@@ -24,8 +24,8 @@ const CommentSchema = new mongoose.Schema({
 CommentSchema.methods.toJSON = function () {
     const commentObject = this.toObject()
 
-    delete commentObject.user_id
-    delete commentObject._id
+    // delete commentObject.user_id
+    // delete commentObject._id
     delete commentObject.blog_id
     delete commentObject.updatedAt
     delete commentObject.createdAt

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Comment from "./comment.js";
 
 const blogSchema = new mongoose.Schema({
     title: {
@@ -34,7 +35,7 @@ blogSchema.methods.toJSON = function () {
     const blogObject = this.toObject()
 
     delete blogObject.creator
-    delete blogObject._id
+    // delete blogObject._id
     delete blogObject.createdAt
     delete blogObject.updatedAt
     delete blogObject.__v
@@ -48,6 +49,13 @@ blogSchema.virtual('comments', {
     localField: '_id',
     foreignField: 'blog_id'
 })
+
+blogSchema.pre('findOneAndDelete', async function (next) {
+
+    await Comment.deleteMany({ blog_id: this._conditions._id })
+    next()
+})
+
 const Blog = mongoose.model('Blog', blogSchema)
 
 export default Blog

@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false,
         minLength: 7,
         trim: true,
         validate(value) {
@@ -40,7 +40,26 @@ const UserSchema = new mongoose.Schema({
             type: String,
             required: true
         }
-    }]
+    }],
+    roleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'Role'
+    },
+    subscription: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false,
+        ref: 'Subscription'
+    },
+    lastDate: {
+        type: Date,
+        required: true
+    },
+    status: {
+        type: String,
+        required: true,
+        default: 'inactive'
+    }
 },
     {
         timestamps: true
@@ -64,16 +83,14 @@ UserSchema.methods.generateToken = async function () {
 
     user.tokens = user.tokens.concat({ token })
     await user.save()
-
     return token
 }
 
 UserSchema.methods.toJSON = function () {
     const user = this
-    console.log(user);
     const userObject = user.toObject()
 
-    delete userObject.password
+    // delete userObject.password
     delete userObject.tokens
 
     return userObject;
@@ -108,14 +125,14 @@ UserSchema.pre('save', async function (next) {
     next()
 });
 
-UserSchema.pre('remove', async function (next) {
-    const user = this
-
-    await Blog.deleteMany({ creator: user._id })
-    await Comment.deleteMany({ user_id: user._id })
-
+UserSchema.pre('findOneAndDelete', async function (next) {
+    const userId = this._conditions._id
+    await Blog.deleteMany({ creator: userId })
+    await Comment.deleteMany({ user_id: userId })
     next()
 })
+
+
 
 const User = mongoose.model('User', UserSchema);
 

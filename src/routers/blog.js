@@ -1,5 +1,5 @@
 import express from "express";
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 import auth from "../middleware/auth.js";
 import Blog from '../models/blog.js'
 
@@ -74,7 +74,7 @@ router.delete('/blogs/:id', auth, async (req, res) => {
 
     try {
         const blogId = req.params.id
-        const blog = await Blog.findByIdAndDelete(blogId)
+        const blog = await Blog.findOneAndDelete({ _id: blogId, creator: req.user._id })
 
         if (!blog) {
             return res.status(400).send('Can not find blog')

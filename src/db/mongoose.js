@@ -1,3 +1,3 @@
-import mongoose from "mongoose"
+// import mongoose from "mongoose"
 
-mongoose.connect("mongodb://localhost:5000/blogApp")
+// mongoose.connect(`mongodb://localhost:5000/${process.env.TENANT_DB}`)
